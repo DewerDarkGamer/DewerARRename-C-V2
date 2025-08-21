@@ -1,0 +1,33 @@
+name: Build .NET App
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore BarcodeRename.csproj
+
+      - name: Build project
+        run: dotnet publish BarcodeRename.csproj -c Release -r win-x64 --self-contained true -o out
+
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4.4.0
+        with:
+          name: windows-build
+          path: out/**
